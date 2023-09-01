@@ -1,15 +1,15 @@
 <launch>
-  <arg name="img_topic" default="/kitti/left_image"/>
+  <!-- <arg name="img_topic" default="/kitti/left_image"/>
   <arg name="lidar_topic" default="/kitti/velodyne_points"/>
 
-  <arg name="image_color" default="false"/>
+  <arg name="image_color" default="false"/> -->
 
   <!-- Node -->
   <node pkg="dso_ros" type="dso_live" name="dso_live">
-    <param name="img_topic" type="string" value="$(arg img_topic)"/>
+    <!-- <param name="img_topic" type="string" value="$(arg img_topic)"/>
     <param name="lidar_topic" type="string" value="$(arg lidar_topic)"/>
 
-    <param name="image_color" type="bool" value="$(arg image_color)"/>
+    <param name="image_color" type="bool" value="$(arg image_color)"/> -->
   </node>
 </launch>
 

@@ -68,6 +68,7 @@ int img_max = 3400;
 // morning: 3100-4800
 // afternoon: 2900-4000
 // evening: 2900-3400
+ros::Time lastTime = ros::Time(0);
 
 using namespace dso;
 using namespace sensor_msgs;
@@ -303,18 +304,21 @@ void imgLidCb(const sensor_msgs::ImageConstPtr& img, const sensor_msgs::PointClo
 
 	float* map_pt = new float[w*h];
 	memset(map_pt,0,w*h*4);
+	cv::Mat lidar_3d;
+	cv::Mat img_3d;
+	cv::Mat img_2d;
 
 	for (const auto& point : cloud->points)
 	{
-		if(point.x<0) continue;
-		cv::Mat lidar_3d = (cv::Mat_<float>(4,1) << point.x, point.y, point.z, 1);
-		cv::Mat img_3d = P * lidar_3d;
+		if(point.x<5) continue;
+		lidar_3d = (cv::Mat_<float>(4,1) << point.x, point.y, point.z, 1);
+		img_3d = P * lidar_3d;
 
 		// if(img_3d.at<float>(2,0)<0) continue;
 		float depth = sqrt(pow(img_3d.at<float>(0,0),2)+pow(img_3d.at<float>(1,0),2)+pow(img_3d.at<float>(2,0),2));
 		if(depth<0.5) continue;
 		img_3d = img_3d / img_3d.at<float>(2,0);
-		cv::Mat img_2d = K * img_3d;
+		img_2d = K * img_3d;
 		float img_2dx = img_2d.at<float>(0,0);
 		float img_2dy = img_2d.at<float>(1,0);
 
@@ -356,7 +360,13 @@ void imgLidCb(const sensor_msgs::ImageConstPtr& img, const sensor_msgs::PointClo
 	ImageAndExposure* undistImg = undistorter->undistort<unsigned char>(&minImg, 1,0, 1.0f);
 	undistImg->timestamp=img->header.stamp.toSec(); // relay the timestamp to dso
 	
+	ros::Time currentTime = ros::Time::now();
 	fullSystem->addActiveFrame(undistImg, frameID, ptCloud, map_pt);
+	double addFrameHZ = 1/(currentTime - lastTime).toSec();
+	printf("[hz] %.1f ", addFrameHZ);
+	lastTime = currentTime;
+
+
 	frameID++;
 	delete undistImg;
 	ptCloud = nullptr;

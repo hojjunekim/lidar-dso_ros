@@ -66,6 +66,8 @@ add_definitions(
 ## Declare a C++ executable
 add_executable(dso_live src/main.cpp)
 
+add_dependencies(dso_live ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(dso_live
     ${DSO_LIBRARY}
     ${Pangolin_LIBRARIES}
