@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-=======
 # Prerequisites
 *.d
 
->>>>>>> 0610b0dd38e54efd3008a98f7726d0fae26e5413
 # Compiled Object files
 *.slo
 *.lo
